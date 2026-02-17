@@ -33,5 +33,5 @@ npm run build
 ```
 
 ## Notes
-- SQLite in local dev via `DATABASE_PROVIDER=sqlite`
-- Switch to Postgres by changing `DATABASE_PROVIDER` and `DATABASE_URL`
+- SQLite in local dev (schema datasource provider is `sqlite`)
+- Configure `DATABASE_URL` for your local SQLite file (for example: `file:./dev.db`)
