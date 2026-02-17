@@ -3,15 +3,37 @@ generator client {
 }
 
 datasource db {
-  provider = env("DATABASE_PROVIDER")
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum TransactionType { income expense }
-enum Frequency { weekly biweekly monthly one_time }
-enum PaymentMethod { cash card bank }
-enum RecurringKind { salary expense }
-enum RecurringStatus { active paused }
+enum TransactionType {
+  income
+  expense
+}
+
+enum Frequency {
+  weekly
+  biweekly
+  monthly
+  one_time
+}
+
+enum PaymentMethod {
+  cash
+  card
+  bank
+}
+
+enum RecurringKind {
+  salary
+  expense
+}
+
+enum RecurringStatus {
+  active
+  paused
+}
 
 model User {
   id           String @id @default(cuid())
