@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = env("DATABASE_PROVIDER")
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType { income expense }
+enum Frequency { weekly biweekly monthly one_time }
+enum PaymentMethod { cash card bank }
+enum RecurringKind { salary expense }
+enum RecurringStatus { active paused }
+
+model User {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+  currency     String @default("MAD")
+  createdAt    DateTime @default(now())
+  categories Category[]
+  transactions Transaction[]
+  salarySources SalarySource[]
+  recurringRules RecurringRule[]
+  budgets Budget[]
+  notifications Notification[]
+}
+
+model SalarySource {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title String
+  amount Float
+  currency String @default("MAD")
+  frequency Frequency
+  paydayRule Int?
+  startDate DateTime
+  endDate DateTime?
+  notes String?
+  createdAt DateTime @default(now())
+  transactions Transaction[]
+  @@index([userId])
+}
+
+model Category {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete: Cascade)
+  name String
+  createdAt DateTime @default(now())
+  transactions Transaction[]
+  budgets Budget[]
+  @@unique([userId,name])
+}
+
+model Transaction {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete: Cascade)
+  type TransactionType
+  amount Float
+  currency String @default("MAD")
+  date DateTime
+  categoryId String?
+  category Category? @relation(fields:[categoryId], references:[id], onDelete: SetNull)
+  merchant String?
+  paymentMethod PaymentMethod?
+  notes String?
+  tags Json?
+  salarySourceId String?
+  salarySource SalarySource? @relation(fields:[salarySourceId], references:[id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  @@index([userId,date])
+}
+
+model RecurringRule {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete: Cascade)
+  kind RecurringKind
+  referenceId String
+  frequency Frequency
+  nextRunDate DateTime
+  status RecurringStatus @default(active)
+  createdAt DateTime @default(now())
+  @@index([userId,nextRunDate])
+}
+
+model Budget {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete: Cascade)
+  categoryId String
+  category Category @relation(fields:[categoryId], references:[id], onDelete: Cascade)
+  month String
+  amount Float
+  alertThreshold Float @default(80)
+  createdAt DateTime @default(now())
+  @@unique([userId,categoryId,month])
+}
+
+model Notification {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete: Cascade)
+  type String
+  message String
+  read Boolean @default(false)
+  createdAt DateTime @default(now())
+  @@index([userId, createdAt])
+}

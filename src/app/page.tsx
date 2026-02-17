@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function Landing(){return <main className='max-w-xl mx-auto p-6'><h1 className='text-3xl font-bold'>Salary & Expenses Manager</h1><p className='mt-3'>Track income, expenses, budgets, and reports.</p><div className='mt-6 flex gap-3'><Link href='/auth/login' className='px-4 py-3 rounded bg-blue-600 text-white'>Login</Link><Link href='/auth/register' className='px-4 py-3 rounded border'>Register</Link></div></main>}
